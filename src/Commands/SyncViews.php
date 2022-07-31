@@ -3,8 +3,8 @@
 namespace Wychoong\ViewExtract\Commands;
 
 use Exception;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
+use Illuminate\Support\Str;
 use Illuminate\View\FileViewFinder;
 
 class SyncViews extends Command
@@ -34,8 +34,6 @@ class SyncViews extends Command
      */
     public function handle()
     {
-
-
         $this->exclude = config('view-extract.exclude', []);
 
         $this->only = config('only', []);
@@ -90,20 +88,26 @@ class SyncViews extends Command
 
                             $excluded = false;
 
-                            if (filled($this->only) && !in_array($view, $this->only)) $excluded = true;
+                            if (filled($this->only) && ! in_array($view, $this->only)) {
+                                $excluded = true;
+                            }
 
-                            if (!$excluded && in_array($view, $this->exclude)) $excluded = true;
+                            if (! $excluded && in_array($view, $this->exclude)) {
+                                $excluded = true;
+                            }
 
                             if ($dryRun) {
-                                $this->line($view . ($excluded ? "\t\t\t-- excluded" : ""));
+                                $this->line($view.($excluded ? "\t\t\t-- excluded" : ''));
                             } elseif ($excluded) {
                                 $this->warn("Excluding: {$view}");
+
                                 return;
                             } else {
                                 $this->syncView($view);
                             }
                         } catch (Exception $e) {
                             $this->warn("Error: $file \tskipping");
+
                             return;
                         }
                     });
@@ -116,10 +120,10 @@ class SyncViews extends Command
         $files = scandir($dir);
 
         foreach ($files as $key => $value) {
-            $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
-            if (!is_dir($path)) {
+            $path = realpath($dir.DIRECTORY_SEPARATOR.$value);
+            if (! is_dir($path)) {
                 $results[] = $path;
-            } else if ($value != "." && $value != "..") {
+            } elseif ($value != '.' && $value != '..') {
                 $results = $this->getDirContents($path, $results);
             }
         }

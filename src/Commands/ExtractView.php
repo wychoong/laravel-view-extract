@@ -36,25 +36,31 @@ class ExtractView extends Command
         foreach ($finder->getHints() as $namespace => $paths) {
             $oriPaths = $paths;
             foreach ($paths as $index => $path) {
-                if (strpos($path, $appPath) === 0) unset($paths[$index]);
+                if (strpos($path, $appPath) === 0) {
+                    unset($paths[$index]);
+                }
             }
-            if ($oriPaths != $paths) $finder->replaceNamespace($namespace, $paths);
+            if ($oriPaths != $paths) {
+                $finder->replaceNamespace($namespace, $paths);
+            }
         }
 
         $view = $this->argument('view');
 
         try {
             $found = $finder->find($view);
-            $this->info("Found: " . $found);
+            $this->info('Found: '.$found);
         } catch (Exception $e) {
             $this->warn("{$view} view not found");
+
             return Command::INVALID;
         }
 
         $needle = 'resources/views/';
         $pos = strrpos($found, $needle);
-        if (!$pos) {
+        if (! $pos) {
             $this->warn('unable to handle the source path');
+
             return Command::FAILURE;
         }
 
@@ -65,26 +71,32 @@ class ExtractView extends Command
         foreach ($finder->getHints() as $_namespace => $paths) {
             foreach ($paths as $path) {
                 if (strpos($found, $path) === 0) {
-                    $namespace = $_namespace . '/';
+                    $namespace = $_namespace.'/';
                     break 2;
                 }
             }
-            if ($namespace) break;
+            if ($namespace) {
+                break;
+            }
         }
 
         $sourceRelativePath = substr($found, $subPos);
 
         $destination = resource_path("views/vendor/{$namespace}{$sourceRelativePath}");
 
-        if (!file_exists(dirname($destination))) mkdir(dirname($destination), 0755, true);
+        if (! file_exists(dirname($destination))) {
+            mkdir(dirname($destination), 0755, true);
+        }
 
-        if (!$this->option('force') && file_exists($destination)) {
-            if (!$this->confirm("View exist in app, overwrite?", false)) return Command::SUCCESS;
+        if (! $this->option('force') && file_exists($destination)) {
+            if (! $this->confirm('View exist in app, overwrite?', false)) {
+                return Command::SUCCESS;
+            }
         }
 
         copy($found, $destination);
 
-        $this->info('Done extract view to ' . $destination);
+        $this->info('Done extract view to '.$destination);
 
         return Command::SUCCESS;
     }
