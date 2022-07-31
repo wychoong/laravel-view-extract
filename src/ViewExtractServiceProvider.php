@@ -4,7 +4,8 @@ namespace Wychoong\ViewExtract;
 
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Wychoong\ViewExtract\Commands\ViewExtractCommand;
+use Wychoong\ViewExtract\Commands\ExtractView;
+use Wychoong\ViewExtract\Commands\SyncViews;
 
 class ViewExtractServiceProvider extends PackageServiceProvider
 {
@@ -20,6 +21,9 @@ class ViewExtractServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->hasMigration('create_laravel-view-extract_table')
-            ->hasCommand(ViewExtractCommand::class);
+            ->hasCommands([
+                ExtractView::class,
+                SyncViews::class,
+            ]);
     }
 }

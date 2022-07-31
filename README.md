@@ -1,23 +1,12 @@
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/support-ukraine.svg?t=1" />](https://supportukrainenow.org)
-
-# This package helps to extract view from vendor package using artisan command
+# Laravel Packages View Extractor
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/wychoong/laravel-view-extract.svg?style=flat-square)](https://packagist.org/packages/wychoong/laravel-view-extract)
 [![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/wychoong/laravel-view-extract/run-tests?label=tests)](https://github.com/wychoong/laravel-view-extract/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/workflow/status/wychoong/laravel-view-extract/Fix%20PHP%20code%20style%20issues?label=code%20style)](https://github.com/wychoong/laravel-view-extract/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/wychoong/laravel-view-extract.svg?style=flat-square)](https://packagist.org/packages/wychoong/laravel-view-extract)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-view-extract.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-view-extract)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
-
+This package helps to extract view from vendor package using artisan command
 ## Installation
 
 You can install the package via composer:
@@ -26,37 +15,42 @@ You can install the package via composer:
 composer require wychoong/laravel-view-extract
 ```
 
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag="laravel-view-extract-migrations"
-php artisan migrate
-```
-
 You can publish the config file with:
 
 ```bash
-php artisan vendor:publish --tag="laravel-view-extract-config"
+php artisan vendor:publish --tag="view-extract-config"
 ```
 
 This is the contents of the published config file:
 
 ```php
 return [
+    /**
+     * Exclude views when resync views (when using sync all)
+     */
+    'exclude' => [
+        // 'namespace::foo.bar.blade-name'
+    ],
+
+    /**
+     * Only sync these views (when using sync all)
+     *     - `only` take priority over `exclude
+     *     - if same view listed in `exclude` it will still be excluded
+     */
+    'only' => [
+        // 'namespace::foo.bar.blade-name'
+    ],
 ];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-view-extract-views"
 ```
 
 ## Usage
 
-```php
-$viewExtract = new Wychoong\ViewExtract();
-echo $viewExtract->echoPhrase('Hello, Wychoong!');
+```bash
+# Extract view from vendor
+php artisan view:extract {view} {--force}
+
+# Sync extracted views from vendor
+php artisan view:sync {namespace?} {--check}
 ```
 
 ## Testing
