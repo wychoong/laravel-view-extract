@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace Wychoong\ViewExtract\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class ViewExtractCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-view-extract';
 
     public $description = 'My command';
 
