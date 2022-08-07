@@ -8,7 +8,6 @@ use Wychoong\ViewExtract\Commands\Concerns\ManageView;
 
 class ExtractView extends Command
 {
-
     use ManageView;
 
     /**

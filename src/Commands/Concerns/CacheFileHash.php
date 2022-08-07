@@ -38,14 +38,18 @@ trait CacheFileHash
 
     public function cacheFile($filename)
     {
-        if (!$this->canCache()) return;
+        if (!$this->canCache()) {
+            return;
+        }
 
         $this->updateCache($filename);
     }
 
     public function checkHashChanged($filename): bool
     {
-        if (!$this->canCache()) return true;
+        if (!$this->canCache()) {
+            return true;
+        }
 
         $fileHash = $this->getFileHash($filename);
         $filenameHash = $this->getFilenameHash($filename);
@@ -57,11 +61,15 @@ trait CacheFileHash
 
     private function updateCache($filename)
     {
-        if (!$this->canCache()) return;
+        if (!$this->canCache()) {
+            return;
+        }
 
         $cache = $this->getCache();
 
-        if (!$this->checkHashChanged($filename)) return;
+        if (!$this->checkHashChanged($filename)) {
+            return;
+        }
 
         $cache[$this->getFilenameHash($filename)] = $this->getFileHash($filename);
 
@@ -70,7 +78,9 @@ trait CacheFileHash
 
     private function getCache(): array
     {
-        if (!$this->canCache()) return [];
+        if (!$this->canCache()) {
+            return [];
+        }
 
         if ($this->storage()->exists($this->cacheFilename)) {
             $file = $this->storage()->get($this->cacheFilename);

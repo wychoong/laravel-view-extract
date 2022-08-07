@@ -11,6 +11,7 @@ use Wychoong\ViewExtract\Commands\Concerns\ManageView;
 class SyncViews extends Command
 {
     use ManageView;
+
     /**
      * The name and signature of the console command.
      *

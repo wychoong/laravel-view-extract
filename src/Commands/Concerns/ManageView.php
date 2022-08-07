@@ -64,7 +64,7 @@ trait ManageView
         if (!$pos) {
             $this->warn('unable to handle the source path');
 
-            throw new Exception("error");
+            throw new Exception('error');
         }
 
         $subPos = $pos + strlen($needle);
