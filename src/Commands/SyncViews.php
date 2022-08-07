@@ -6,9 +6,11 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Illuminate\View\FileViewFinder;
+use Wychoong\ViewExtract\Commands\Concerns\ManageView;
 
 class SyncViews extends Command
 {
+    use ManageView;
     /**
      * The name and signature of the console command.
      *
@@ -34,9 +36,11 @@ class SyncViews extends Command
      */
     public function handle()
     {
+        $this->info(($this->canCache() ? 'Cache mode' : 'No cache mode') . PHP_EOL);
+
         $this->exclude = config('view-extract.exclude', []);
 
-        $this->only = config('only', []);
+        $this->only = config('view-extract.only', []);
 
         if ($this->option('check')) {
             $this->newLine();
@@ -65,6 +69,9 @@ class SyncViews extends Command
         /** @var FileViewFinder $finder */
         $finder = app('view')->getFinder();
 
+        /** @var FileViewFinder $packageFinder */
+        $packageFinder = $this->finder();
+
         $namespaces = $finder->getHints();
 
         foreach ($namespaces as $namespace => $paths) {
@@ -82,22 +89,37 @@ class SyncViews extends Command
                             ->filter(fn ($part) => filled($part))
                             ->join('.');
                     })
-                    ->each(function ($file) use ($dryRun, $namespace) {
+                    ->each(function ($file) use ($dryRun, $namespace, $packageFinder) {
                         try {
                             $view = "{$namespace}::{$file}";
 
                             $excluded = false;
 
-                            if (filled($this->only) && ! in_array($view, $this->only)) {
-                                $excluded = true;
+                            $skip = false;
+
+                            try {
+                                $packageFile = $packageFinder->find($view);
+                                $skip = !$this->checkHashChanged($packageFile);
+                            } catch (Exception $e) {
+                                $skip = true;
                             }
 
-                            if (! $excluded && in_array($view, $this->exclude)) {
-                                $excluded = true;
+                            if (!$skip) {
+                                if (filled($this->only) && !in_array($view, $this->only)) {
+                                    $excluded = true;
+                                }
+
+                                if (!$excluded && in_array($view, $this->exclude)) {
+                                    $excluded = true;
+                                }
                             }
 
                             if ($dryRun) {
-                                $this->line($view.($excluded ? "\t\t\t-- excluded" : ''));
+                                $this->line($view . ($skip ? "\t\t\t--skipped" : ($excluded ? "\t\t\t-- excluded" : '')));
+                            } elseif ($skip) {
+                                $this->line("Skip: {$view}");
+
+                                return;
                             } elseif ($excluded) {
                                 $this->warn("Excluding: {$view}");
 
@@ -113,6 +135,9 @@ class SyncViews extends Command
                     });
             }
         }
+
+        $this->newLine();
+        $this->canCache() && $this->line('* view that is not changed is skipped');
     }
 
     private function getDirContents($dir, $results = [])
@@ -120,8 +145,8 @@ class SyncViews extends Command
         $files = scandir($dir);
 
         foreach ($files as $key => $value) {
-            $path = realpath($dir.DIRECTORY_SEPARATOR.$value);
-            if (! is_dir($path)) {
+            $path = realpath($dir . DIRECTORY_SEPARATOR . $value);
+            if (!is_dir($path)) {
                 $results[] = $path;
             } elseif ($value != '.' && $value != '..') {
                 $results = $this->getDirContents($path, $results);

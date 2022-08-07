@@ -18,4 +18,5 @@ return [
         // 'namespace::foo.bar.blade-name'
     ],
 
+    'cache' => true,
 ];
