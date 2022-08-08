@@ -116,8 +116,8 @@ class SyncViews extends Command
                             }
 
                             if ($dryRun) {
-                                $this->components->twoColumnDetail($view, ($skip ? "skipped" : ($excluded ? "excluded" : '')));
-                                // $this->line($view . ($skip ? "\t\t\t--skipped" : ($excluded ? "\t\t\t-- excluded" : '')));
+                                $this->components->twoColumnDetail($view, ($skip ? 'skipped' : ($excluded ? 'excluded' : '')));
+                            // $this->line($view . ($skip ? "\t\t\t--skipped" : ($excluded ? "\t\t\t-- excluded" : '')));
                             } elseif ($skip) {
                                 $this->line("Skip: {$view}");
                             } elseif ($excluded) {
