@@ -44,14 +44,8 @@ class ExtractView extends Command
             return Command::INVALID;
         }
 
-        if (!$this->checkFileExist()) {
-            $this->warn("{$view} view not found");
-
-            return Command::FAILURE;
-        }
-
         try {
-            if (!$this->option('force')) {
+            if (!$this->option('force') && $this->checkFileExist()) {
                 $skip = false;
                 if (!$this->checkPackageViewChanged()) {
                     $skip = $this->confirm("Package's view no changes, skip?", true);

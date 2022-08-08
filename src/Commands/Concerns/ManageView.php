@@ -45,7 +45,7 @@ trait ManageView
     {
         $this->sourcePath = $this->finder()->find($view);
 
-        $this->getFileDestination();
+        $this->setFileDestination();
 
         return $this->sourcePath;
     }
@@ -57,7 +57,12 @@ trait ManageView
         }
     }
 
-    public function getFileDestination()
+    private function getFileDestination(): string
+    {
+        return $this->destination;
+    }
+
+    private function setFileDestination(): void
     {
         $needle = 'resources/views/';
         $pos = strrpos($this->sourcePath, $needle);

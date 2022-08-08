@@ -37,7 +37,7 @@ class SyncViews extends Command
      */
     public function handle()
     {
-        $this->info(($this->canCache() ? 'Cache mode' : 'No cache mode') . PHP_EOL);
+        $this->info(($this->canCache() ? 'Cache mode' : 'No cache mode'));
 
         $this->exclude = config('view-extract.exclude', []);
 
@@ -116,15 +116,12 @@ class SyncViews extends Command
                             }
 
                             if ($dryRun) {
-                                $this->line($view . ($skip ? "\t\t\t--skipped" : ($excluded ? "\t\t\t-- excluded" : '')));
+                                $this->components->twoColumnDetail($view, ($skip ? "skipped" : ($excluded ? "excluded" : '')));
+                                // $this->line($view . ($skip ? "\t\t\t--skipped" : ($excluded ? "\t\t\t-- excluded" : '')));
                             } elseif ($skip) {
                                 $this->line("Skip: {$view}");
-
-                                return;
                             } elseif ($excluded) {
                                 $this->warn("Excluding: {$view}");
-
-                                return;
                             } else {
                                 $this->syncView($view);
                             }
